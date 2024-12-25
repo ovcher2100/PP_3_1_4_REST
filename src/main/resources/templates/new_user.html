@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>New User</title>
+    <style>
+        body {
+            padding: 30px;
+            font-size: 18px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+
+<h3>Создать нового пользователя</h3>
+<div>
+    <form th:method="POST" th:action="@{/admin}" th:object="${userList}">
+        <label for="name">Введите имя</label>
+        <input type="text" name="name" id="name">
+        <br>
+        <label for="password">Введите пароль</label>
+        <input type="password" name="password" id="password">
+        <br>
+        <label for="email">Введите email</label>
+        <input type="text" name="email" id="email">
+        <br>
+        <label for="newRole">Роли</label>
+        <br>
+        <select id="newRole" size="2" name="nameRoles" multiple="multiple">
+            <option th:each="role :${roleList}"
+                    th:value="${role.name}"
+                    th:text="${#strings.replace(role.name, 'ROLE_', '')}"
+                    th:selected="${role.name} == 'ROLE_USER'">
+            </option>
+        </select>
+        <br>
+        <input type="submit" value="Создать">
+    </form>
+</div>
+
+</body>
+</html>
