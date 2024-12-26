@@ -1,13 +1,11 @@
 package ru.kata.spring.boot_security.demo.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.kata.spring.boot_security.demo.configs.PasswordEncoderConfig;
 import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.repositories.UserRepository;
@@ -21,10 +19,10 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoderConfig passwordEncoder;
 
     @Autowired
-    public UserServiceImpl(@Lazy PasswordEncoder passwordEncoder, UserRepository userRepository ) {
+    public UserServiceImpl(PasswordEncoderConfig passwordEncoder, UserRepository userRepository) {
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
     }
@@ -43,15 +41,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public void update(User updateUser) {
         User user = getUserById(updateUser.getId());
-        if(user!=null){
         user.setUsername(updateUser.getUsername());
         user.setEmail(updateUser.getEmail());
         user.setPassword(updateUser.getPassword());
         user.setRoles(updateUser.getRoles());
         userRepository.save(user);
-        } else {
-            throw new EntityNotFoundException("User не найден");
-        }
     }
 
     @Override
@@ -61,11 +55,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserById(long id) {
-        User user = findUserById(id);
-        if (user == null) {
-            throw new RuntimeException("User с таким id нет");
-        }
-        return user;
+        return findUserById(id);
     }
 
 
@@ -79,7 +69,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void saveUser(User user, List<Role> roles) {
         user.setRoles(roles);
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setPassword(passwordEncoder.passwordEncoder().encode(user.getPassword()));
         userRepository.save(user);
     }
 
