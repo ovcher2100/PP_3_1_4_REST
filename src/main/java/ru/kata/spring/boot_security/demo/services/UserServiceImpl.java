@@ -10,7 +10,7 @@ import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.repositories.UserRepository;
 
-import javax.persistence.EntityNotFoundException;
+
 import java.util.List;
 
 
@@ -40,7 +40,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void update(User updateUser) {
-        User user = getUserById(updateUser.getId());
+        User user = findUserById(updateUser.getId());
         user.setUsername(updateUser.getUsername());
         user.setEmail(updateUser.getEmail());
         user.setPassword(updateUser.getPassword());
@@ -51,11 +51,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public void delete(long id) {
         userRepository.deleteById(id);
-    }
-
-    @Override
-    public User getUserById(long id) {
-        return findUserById(id);
     }
 
 

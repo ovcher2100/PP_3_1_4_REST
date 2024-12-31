@@ -10,6 +10,7 @@ import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.services.RoleService;
 import ru.kata.spring.boot_security.demo.services.UserService;
 
+import java.security.Principal;
 import java.util.List;
 
 @Controller
@@ -29,6 +30,7 @@ public class AdministratorController {
     public String adminPage(@AuthenticationPrincipal UserDetails userDetails, Model model) {
         String username = userDetails.getUsername();
         User user = (User) userService.loadUserByUsername(username);
+        model.addAttribute("id", user.getId());
         model.addAttribute("username", username);
         model.addAttribute("roles", user.getRoles());
         model.addAttribute("email", user.getEmail());
@@ -38,51 +40,45 @@ public class AdministratorController {
         return "admin";
     }
 
+    @GetMapping("/add")
+    public String showAddUserForm(Model model, Principal principal) {
+        String name = principal.getName();
+        User user = userService.findByUserName(name);
+        model.addAttribute("user", user);
+        model.addAttribute("newUser", new User()); //
+        model.addAttribute("allRole", roleService.getAllRoles()); //
+        return "new_user";
+    }
+
     @PostMapping("/add")
-    public String addUser(@ModelAttribute("newUser") User user, @RequestParam("roles") List<Long> roleIds) {
+    public String addUser(@ModelAttribute User user, @RequestParam("roles") List<Long> roleIds) {
         List<Role> roles = roleService.getRolesById(roleIds);
         user.setRoles(roles);
         userService.saveUser(user, roles);
         return "redirect:/admin";
     }
-//    @PostMapping("/add")
-//    public String addUser(@ModelAttribute("newUser") User user,
-//                          @RequestParam("roles") List<Long> roleIds) {
-//        try {
-//            List<Role> roles = roleService.getRolesById(roleIds);
-//            if (roles.isEmpty()) {
-//                throw new IllegalArgumentException("No roles found for the provided IDs");
-//            }
-//            user.setRoles(roles);
-//
-//            userService.saveUser(user, roles);
-//
-//            return "redirect:/admin";
-//        } catch (Exception e) {
-//            // Логируем исключение для отладки
-//            System.err.println("Error adding user: " + e.getMessage());
-//            e.printStackTrace(); // Печатаем стек вызовов
-//        }
-//        return "/";
-//    }
 
 
-    @DeleteMapping("/delete/{id}")
+    @PostMapping("/user/{id}/delete")
     public String deleteUser(@PathVariable Long id) {
-        userService.delete(id);
+        User user = userService.findUserById(id);
+        userService.delete(user.getId());
         return "redirect:/admin";
     }
 
-    @GetMapping("/edit/{id}")
+    @GetMapping("/user/{id}/edit")
     public String editUser(@PathVariable Long id, Model model) {
         User user = userService.findUserById(id);
         model.addAttribute("user", user);
         model.addAttribute("allRole", roleService.getAllRoles());
         return "edit_user";
     }
-    @PostMapping("/update_user")
-    public String updateUser(@ModelAttribute User user,@RequestParam Long id){
+
+    @PostMapping("/user/{id}/edit")
+    public String updateUser(@PathVariable Long id, @ModelAttribute User user, @RequestParam("roles") List<Long> roleIds) {
+        List<Role> roles = roleService.getRolesById(roleIds);
         user.setId(id);
+        user.setRoles(roles);
         userService.update(user);
         return "redirect:/admin";
     }
