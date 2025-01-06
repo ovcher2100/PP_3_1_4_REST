@@ -15,9 +15,9 @@ import ru.kata.spring.boot_security.demo.services.UserService;
 @PreAuthorize("hasRole('ROLE_USER') or hasRole('ROLE_ADMIN')")
 public class UserController {
 
-    UserService userService;
+    private final UserService userService;
 
-    @Autowired
+
     public UserController(UserService userService) {
         this.userService = userService;
     }
