@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService {
         User user = findUserById(updateUser.getId());
         user.setUsername(updateUser.getUsername());
         user.setEmail(updateUser.getEmail());
-        user.setPassword(updateUser.getPassword());
+        user.setPassword(passwordEncoder.passwordEncoder().encode(updateUser.getPassword()));
         user.setRoles(updateUser.getRoles());
         userRepository.save(user);
     }
@@ -60,8 +60,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void saveUser(User user, List<Role> roles) {
-        user.setRoles(roles);
+    public void saveUser(User user) {
         user.setPassword(passwordEncoder.passwordEncoder().encode(user.getPassword()));
         userRepository.save(user);
     }
