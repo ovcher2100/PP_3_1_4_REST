@@ -5,7 +5,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.boot_security.demo.configs.PasswordEncoderConfig;
-import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.repositories.UserRepository;
 
@@ -37,14 +36,24 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void update(User updateUser) {
         User user = findUserById(updateUser.getId());
+        if (user == null) {
+            throw new RuntimeException("User not found with id: " + updateUser.getId());
+        }
         user.setUsername(updateUser.getUsername());
         user.setEmail(updateUser.getEmail());
-        user.setPassword(passwordEncoder.passwordEncoder().encode(updateUser.getPassword()));
+        // Обновление пароля только если он передан и не пуст
+        if (updateUser.getPassword() != null && !updateUser.getPassword().isEmpty()) {
+            user.setPassword(passwordEncoder.passwordEncoder().encode(updateUser.getPassword())); // Вы преобразуете пароль, только если он не пустой
+        }
         user.setRoles(updateUser.getRoles());
+        System.out.println("Updating user details: " + user);
         userRepository.save(user);
+        System.out.println("User updated: " + user);
     }
+
 
     @Override
     public void delete(long id) {

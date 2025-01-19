@@ -1,5 +1,8 @@
 package ru.kata.spring.boot_security.demo.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -36,13 +39,15 @@ public class User implements UserDetails {
     private String password;
 
     @Column(name = "email")
-    @NotEmpty
+    @NotEmpty(message = "Email не может быть пустым")
     private String email;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_role",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
+    @Fetch(FetchMode.JOIN)
+    @JsonManagedReference
     private Set<Role> roles = new HashSet<>();
 
     public User(Long id, String username, String password, String email, Set<Role> roles) {

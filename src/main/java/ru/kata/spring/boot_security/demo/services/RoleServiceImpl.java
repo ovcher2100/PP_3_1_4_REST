@@ -1,12 +1,13 @@
 package ru.kata.spring.boot_security.demo.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.repositories.RoleRepository;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -20,17 +21,13 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public List<Role> getRolesById(List<Long> id) {
-        return roleRepository.findAllById(id);
-    }
-
-    @Override
     public List<Role> getAllRoles() {
         return roleRepository.findAll();
     }
 
     @Override
-    public Role findRoleByName(String name) {
-        return roleRepository.findByName(name);
+    public Set<Role> findByIds(List<Long> ids) {
+        return new HashSet<>(roleRepository.findAllById(ids));
     }
+
 }
