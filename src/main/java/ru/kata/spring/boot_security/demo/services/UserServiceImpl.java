@@ -33,10 +33,6 @@ public class UserServiceImpl implements UserService {
         return userRepository.findAll();
     }
 
-    @Override
-    public void add(User user) {
-        userRepository.save(user);
-    }
 
     @Override
     @Transactional
