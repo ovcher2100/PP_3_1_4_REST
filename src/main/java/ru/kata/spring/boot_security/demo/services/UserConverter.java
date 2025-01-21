@@ -13,7 +13,14 @@ import java.util.stream.Collectors;
 
 @Component
 public class UserConverter {
-    public static UserDTO toUserDTO(User user) {
+
+    private final RoleService roleService;
+
+    public UserConverter(RoleService roleService) {
+        this.roleService = roleService;
+    }
+
+    public  UserDTO toUserDTO(User user) {
         UserDTO userDTO = new UserDTO();
         userDTO.setId(user.getId());
         userDTO.setUsername(user.getUsername());
@@ -24,7 +31,7 @@ public class UserConverter {
         return userDTO;
     }
 
-    public static User toUser(UserDTO userDTO, RoleService roleService) {
+    public  User toUser(UserDTO userDTO) {
         User user = new User();
         user.setId(userDTO.getId());
         user.setUsername(userDTO.getUsername());

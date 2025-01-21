@@ -24,11 +24,13 @@ public class AdministratorRestController {
 
     private final UserService userService;
     private final RoleService roleService;
+    private final UserConverter userConverter;
 
 
-    public AdministratorRestController(UserService userService, RoleService roleService) {
+    public AdministratorRestController(UserService userService, RoleService roleService,UserConverter userConverter) {
         this.userService = userService;
         this.roleService = roleService;
+        this.userConverter = userConverter;
     }
 
     @GetMapping("/admin")
@@ -45,24 +47,21 @@ public class AdministratorRestController {
 
     @PostMapping("/add")
     public ResponseEntity<UserDTO> addUser(@RequestBody UserDTO userDTO) {
-        User user = UserConverter.toUser(userDTO, roleService);
+        User user = userConverter.toUser(userDTO);
         userService.saveUser(user);
-        return ResponseEntity.ok(UserConverter.toUserDTO(user));
+        return ResponseEntity.ok(userConverter.toUserDTO(user));
     }
 
     @DeleteMapping("/user/{id}")
     public ResponseEntity<HttpStatus> deleteUser(@PathVariable Long id) {
-        User user = userService.findUserById(id);
-        userService.delete(user.getId());
+        userService.delete(id);
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
 
     @PutMapping("/user/{id}")
     public ResponseEntity<Void> updateUser(@PathVariable Long id, @RequestBody UserDTO userDTO) {
-        User user = UserConverter.toUser(userDTO, roleService);
-        user.setId(id);
-        userService.update(user);
+        userService.updateUserFromDTO(id, userDTO);
         return ResponseEntity.ok().build();
     }
 
