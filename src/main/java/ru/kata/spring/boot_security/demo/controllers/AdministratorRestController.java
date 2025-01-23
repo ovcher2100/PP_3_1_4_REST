@@ -9,7 +9,6 @@ import ru.kata.spring.boot_security.demo.DTO.UserDTO;
 import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.services.RoleService;
-import ru.kata.spring.boot_security.demo.services.UserConverter;
 import ru.kata.spring.boot_security.demo.services.UserService;
 
 
@@ -24,13 +23,11 @@ public class AdministratorRestController {
 
     private final UserService userService;
     private final RoleService roleService;
-    private final UserConverter userConverter;
 
 
-    public AdministratorRestController(UserService userService, RoleService roleService,UserConverter userConverter) {
+    public AdministratorRestController(UserService userService, RoleService roleService) {
         this.userService = userService;
         this.roleService = roleService;
-        this.userConverter = userConverter;
     }
 
     @GetMapping("/admin")
@@ -47,9 +44,8 @@ public class AdministratorRestController {
 
     @PostMapping("/add")
     public ResponseEntity<UserDTO> addUser(@RequestBody UserDTO userDTO) {
-        User user = userConverter.toUser(userDTO);
-        userService.saveUser(user);
-        return ResponseEntity.ok(userConverter.toUserDTO(user));
+        userService.save(userDTO);
+        return ResponseEntity.ok(userDTO);
     }
 
     @DeleteMapping("/user/{id}")
@@ -61,7 +57,7 @@ public class AdministratorRestController {
 
     @PutMapping("/user/{id}")
     public ResponseEntity<Void> updateUser(@PathVariable Long id, @RequestBody UserDTO userDTO) {
-        userService.updateUserFromDTO(id, userDTO);
+        userService.update(id,userDTO);
         return ResponseEntity.ok().build();
     }
 

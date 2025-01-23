@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void updateUserFromDTO(Long id, UserDTO userDTO) {
+    public void update(Long id, UserDTO userDTO) {
         User userToUpdate = userConverter.toUser(userDTO);
         userToUpdate.setId(id);
         update(userToUpdate);
@@ -70,11 +70,15 @@ public class UserServiceImpl implements UserService {
                 new RuntimeException("User с данным id не найден"));
     }
 
+
     @Override
-    public void saveUser(User user) {
+    @Transactional
+    public void save(UserDTO userDTO){
+        User user = userConverter.toUser(userDTO);
         user.setPassword(passwordEncoder.passwordEncoder().encode(user.getPassword()));
         userRepository.save(user);
     }
+
 
     @Override
     @Transactional

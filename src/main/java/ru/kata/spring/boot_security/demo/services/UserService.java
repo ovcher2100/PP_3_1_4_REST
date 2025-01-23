@@ -17,10 +17,10 @@ public interface UserService extends UserDetailsService {
 
     User findUserById(long id);
 
-    void saveUser(User user);
+    void save(UserDTO userDTO);
 
     User findByUserName(String username);
 
-    void updateUserFromDTO(Long id, UserDTO userDTO);
+    void update(Long id, UserDTO userDTO);
 
 }
